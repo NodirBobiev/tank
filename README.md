@@ -19,7 +19,7 @@ python3 -m venv env
 ```
 4. Activate the python environment
 ```
-source /env/bin/activate
+source env/bin/activate
 ```
 5. Install the required packages in requirements.txt
 ```
@@ -36,7 +36,7 @@ python run.py
 
 1. Make sure the python environment is activated, if not, run the following command:
 ```
-source /env/bin/activate
+source env/bin/activate
 ```
 2. Run the app:
 ```
