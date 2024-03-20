@@ -1,6 +1,6 @@
 # tank
 
-## Setup and Run
+## Setup and Run For the first time
 
 **These commands are for ubuntu. For windows some commands are different but the steps should be the same**
 
@@ -34,7 +34,7 @@ python run.py
 
 **If you have already completed the previous steps and you have a python environment setup with all required packages installed, then go ahead with the following steps:**
 
-1. Make the python environment is activated, if not run the following command:
+1. Make sure the python environment is activated, if not, run the following command:
 ```
 source /env/bin/activate
 ```
