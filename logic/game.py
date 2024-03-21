@@ -1,11 +1,11 @@
-
 class Game:
     def __init__(self):
         self.objects = []
 
     def update(self, deltatime: float):
         for o in self.objects:
-            o.update(deltatime)
+            if (not o.update(deltatime)):
+                self.objects.remove(o)
         
         for o in self.objects:
             print(o)
