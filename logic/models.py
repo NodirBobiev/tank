@@ -4,9 +4,6 @@ from dataclasses import dataclass
 import pygame 
 from logic.utils import get_direction
 
-def addRect(obj, width, height):
-    setattr(obj, 'rect', pygame.Rect(obj.posX, obj.posY, width, height))
-
 @dataclass
 class Bullet(Object):
     posX : float
