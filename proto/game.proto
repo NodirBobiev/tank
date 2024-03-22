@@ -1,0 +1,57 @@
+syntax = "proto3"; 
+
+package game;
+
+import "google/protobuf/empty.proto";
+
+service Game {
+  rpc GetState(google.protobuf.Empty) returns (GetStateReply);
+  rpc GetStateStream(google.protobuf.Empty) returns (stream GameState);
+  rpc PostTankEvent(PostTankEventRequest) returns(google.protobuf.Empty);
+}
+
+message Tank {
+  double pos_x = 1;
+  double pos_y = 2;
+  double velocity = 3;
+  double angle = 4;
+  double health = 5;
+  double bullet_damage = 6;
+  double bullet_velocity = 7;
+  double shoot_cooldown = 8;
+  double last_shoot_time = 9;
+  string id = 10;
+}
+
+message Bullet {
+  double pos_x = 1; 
+  double pos_y = 2;
+  double angle = 3;
+  double velocity = 4;
+  double damage = 5;
+}
+
+message GameState {
+  repeated Tank tanks = 1;
+  repeated Bullet bullets = 2;
+}
+
+message GetStateReply {
+  GameState game_state = 1;
+}
+
+// -----
+
+message PostTankEventRequest{
+  TankEvent event = 1;
+  string tank_id = 2;
+
+}
+
+enum TankEvent{
+  SHOOT = 0;
+  MOVE_FORWARD = 1;
+  MOVE_BACKWARD = 2;
+  ROTATE_LEFT = 3;
+  ROTATE_RIGHT = 4;
+}
