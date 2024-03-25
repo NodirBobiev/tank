@@ -12,10 +12,18 @@ class Bullet(Object):
     velocity: float
     damage: float
     creationTime: float
-    rect: tuple
+    rect: pygame.Rect
+
+    def __post_init__(self):
+        self.image = pygame.Surface = pygame.image.load("./images/bullet5.png")
+        self.mask = pygame.mask.from_surface(self.image.convert_alpha())
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
 
     def update(self, deltatime: float):
+        
         dir = get_direction(self.angle) * self.velocity * deltatime
+        
         self.posX += dir.x
         self.posY += dir.y
 
@@ -27,12 +35,20 @@ class Bullet(Object):
 
 
     def render(self, surface: pygame.Surface):
-        pygame.draw.circle(surface, (100, 100, 0), (self.posX, self.posY), 3)
+        img = pygame.transform.rotate(self.image, 270-self.angle)
+        img_size = img.get_size()
+        pos = (self.posX-img_size[0]/2, self.posY-img_size[1]/2)
+        surface.blit(img, pos)
 
 
 @dataclass
 class TankT34(Tank, entities.Tank):
     image: pygame.Surface = pygame.image.load("./images/T34_preview.png")
+
+    def __post_init__(self):
+        self.mask = pygame.mask.from_surface(self.image.convert_alpha())
+        self.width = self.image.get_width() #77
+        self.height = self.image.get_height() #148
 
     def update(self, deltatime: float):
         keys = pygame.key.get_pressed()
@@ -70,5 +86,5 @@ class TankT34(Tank, entities.Tank):
         if curTime- self.lastShootTime < self.shootCooldown:
             return
         self.lastShootTime = curTime
-        b = Bullet(self.posX, self.posY, self.angle, self.bulletVelocity, self.bulletDamage, curTime, (self.posX, self.posY, 6, 6))
+        b = Bullet(self.posX, self.posY+0.5, self.angle, self.bulletVelocity, self.bulletDamage, curTime, (self.posX, self.posY, 6, 6))
         self.on_shoot(b)

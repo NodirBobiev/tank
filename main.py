@@ -13,6 +13,13 @@ def run(g: Game):
 
     # Colors
     background_color = (255, 255, 255) 
+    
+    t1 = TankT34(posX=100, posY=100, angle=90, velocity=100, bulletDamage=20, bulletVelocity=600, shootCooldown=1000)
+    t1.on_shoot = on_shoot(g)
+    t2 = TankT34(posX=500, posY=110, angle=180, velocity=100, bulletDamage=20, bulletVelocity=600, shootCooldown=1000)
+
+    g.objects.append(t1)
+    g.objects.append(t2)
 
     running = True
     FPS = 30
@@ -21,8 +28,7 @@ def run(g: Game):
             if event.type == pygame.QUIT:
                 running = False
 
-        deltatime = pygame.time.Clock().tick(FPS)/1000    
-        print(f"{deltatime=}")
+        deltatime = pygame.time.Clock().tick(FPS)/1000
         g.update(deltatime)
 
         # Fill the screen with the background color
@@ -47,11 +53,5 @@ def on_shoot(g : Game):
 if __name__=="__main__":
     g = Game()
 
-    t1 = TankT34(posX=100, posY=100, angle=90, velocity=100, bulletDamage=20, bulletVelocity=500, shootCooldown=1000)
-    t1.on_shoot = on_shoot(g)
-    t2 = TankT34(posX=500, posY=500, angle=120, velocity=100, bulletDamage=20, bulletVelocity=500, shootCooldown=1000)
-
-    g.objects.append(t1)
-    g.objects.append(t2)
 
     run(g)
