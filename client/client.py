@@ -43,7 +43,7 @@ tank_events = [
     game_pb2.TankEvent.ROTATE_RIGHT,
 ]
 
-def post_tank_event():
+def post_random_tank_event():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = game_pb2_grpc.GameStub(channel)
         
@@ -54,6 +54,19 @@ def post_tank_event():
 
         print(f"Posting event for tank {tank_id}: Event {event}")
         stub.PostTankEvent(request)
+
+def post_tank_event(idx: int):
+    with grpc.insecure_channel('localhost:50051') as channel:
+        stub = game_pb2_grpc.GameStub(channel)
+        
+        tank_id = random.choice(tank_ids)
+        event = tank_events[idx]
+        request = game_pb2.PostTankEventRequest(tank_id=tank_id, event=event)
+        
+
+        print(f"Posting event for tank {tank_id}: Event {event}")
+        stub.PostTankEvent(request)
+
 
 if __name__ == '__main__':
     get_game_state_stream()

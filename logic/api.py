@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 import pygame
 
+class Command(ABC):
+    @abstractmethod
+    def execute(self):
+        pass
 
 class Object(ABC):
     @abstractmethod
@@ -12,7 +16,4 @@ class Object(ABC):
         pass
 
 
-class Tank(Object):
-    @abstractmethod
-    def shoot():
-        pass
+

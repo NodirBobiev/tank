@@ -1,8 +1,23 @@
 from logic.game import Game
-from logic.models import TankT34, Bullet
+from logic.tank.model import TankT34
+from logic.bullet.model import Bullet
+from logic.controller.tank import TankController, random_event
+import asyncio
 import pygame
+import sys
+from server.game import serve
 
-def run(g: Game):
+async def run(event_queue:asyncio.Queue):
+    g = Game()
+    t1 = TankT34(posX=500, posY=500, angle=90, velocity=100, bulletDamage=20, bulletVelocity=500, shootCooldown=1000)
+    t1.on_shoot = on_shoot(g)
+    
+    controller = TankController(t1)
+
+    # t2 = TankT34(posX=500, posY=500, angle=120, velocity=100, bulletDamage=20, bulletVelocity=500, shootCooldown=1000)
+
+    g.objects.append(t1)
+    
     # Initialize Pygame
     pygame.init()
 
@@ -17,6 +32,11 @@ def run(g: Game):
     running = True
     FPS = 30
     while running:
+        while not event_queue.empty():
+            event = await event_queue.get()
+            print(f"--- :{event}")
+            controller.execute_event(event)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -34,6 +54,8 @@ def run(g: Game):
         # Update the display
         pygame.display.flip()
 
+        await asyncio.sleep(0)
+
     # Quit Pygame
     pygame.quit()
 
@@ -44,14 +66,18 @@ def on_shoot(g : Game):
     
     return append_to_g
 
-if __name__=="__main__":
-    g = Game()
 
-    t1 = TankT34(posX=100, posY=100, angle=90, velocity=100, bulletDamage=20, bulletVelocity=500, shootCooldown=1000)
-    t1.on_shoot = on_shoot(g)
-    t2 = TankT34(posX=500, posY=500, angle=120, velocity=100, bulletDamage=20, bulletVelocity=500, shootCooldown=1000)
+async def main():
+    event_queue = asyncio.Queue()
+    
+    game_server = asyncio.create_task(serve(event_queue))
 
-    g.objects.append(t1)
-    g.objects.append(t2)
+    game_driver = asyncio.create_task(run(event_queue))
 
-    run(g)
+    await asyncio.gather(game_driver, game_server)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
