@@ -1,6 +1,5 @@
 from logic.tank.common import Tank
 from logic.bullet.model import Bullet
-from core import entities
 from dataclasses import dataclass
 from logic.utils import get_direction
 from logic.time.timer import Timer
@@ -47,10 +46,13 @@ class TankT34(Tank, Object):
         self.reset_deltas()
 
     def reflect_deltas(self):
-        self.angle += self.deltaAngle * self.game.timer.get_delta_time()
-        dir = get_direction(self.angle) * self.deltaVelocity * self.game.timer.get_delta_time()
-        self.posX += dir.x
-        self.posY += dir.y
+        # for performance efficiency check if there is something to multiply
+        if self.deltaAngle != 0:
+            self.angle += self.deltaAngle * self.game.timer.get_delta_time()
+        if self.deltaVelocity != 0:
+            dir = get_direction(self.angle) * self.deltaVelocity * self.game.timer.get_delta_time()
+            self.posX += dir.x
+            self.posY += dir.y
 
     def reset_deltas(self):
         self.deltaAngle = 0
@@ -68,6 +70,6 @@ class TankT34(Tank, Object):
             angle=self.angle, 
             velocity=self.bulletVelocity, 
             damage=self.bulletDamage,
-            lifeSpan=1
+            lifeSpan=100
         )
         self.game.add_recent_object(b)

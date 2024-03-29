@@ -38,7 +38,7 @@ async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue):
         print(f"objects: {len(g.objects)}")
         print("******* before await: {:.6f}".format(game_timer.get_real_delta_time()))
         await asyncio.sleep(1 / FPS - game_timer.get_real_delta_time())
-        print("======= after await: {:.6f}".format(game_timer.get_real_delta_time()))
+        # print("======= after await: {:.6f}".format(game_timer.get_real_delta_time()))
 
         g.update()
-        g.print()
+        # g.print()
