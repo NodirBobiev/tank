@@ -5,6 +5,7 @@ import grpc
 import time
 import random
 import asyncio
+import signal
 
 import google.protobuf.empty_pb2
 
@@ -65,16 +66,16 @@ class GameServicer(game_pb2_grpc.GameServicer):
     def __init__(self, event_queue: asyncio.Queue):
         self.event_queue = event_queue
 
-    def GetState(self, request, context):
-        print(f"Here we go again! client address={extract_address(context)}")
-        return create_game_state_reply()
+    # def GetState(self, request, context):
+    #     print(f"Here we go again! client address={extract_address(context)}")
+    #     return create_game_state_reply()
     
-    def GetStateStream(self, request, context):
-        while True:
-            print(f"Sof dunyora jugiyo giriftay client address={extract_address(context)}")
-            # Send random game states to the client
-            yield create_random_game_state()
-            time.sleep(1)  # Adjus
+    # def GetStateStream(self, request, context):
+    #     while True:
+    #         print(f"Sof dunyora jugiyo giriftay client address={extract_address(context)}")
+    #         # Send random game states to the client
+    #         yield create_random_game_state()
+    #         time.sleep(1)  # Adjus
     
     async def PostTankEvent(self, request, context):
         tank_id = request.tank_id
@@ -96,7 +97,7 @@ class GameServicer(game_pb2_grpc.GameServicer):
         return google.protobuf.empty_pb2.Empty()
     
 
-async def serve(event_queue: asyncio.Queue):
+async def serve(stop_event:asyncio.Event, event_queue: asyncio.Queue):
     server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
 
     game_pb2_grpc.add_GameServicer_to_server(GameServicer(event_queue), server)
@@ -104,11 +105,18 @@ async def serve(event_queue: asyncio.Queue):
     server.add_insecure_port('[::]:50051')  # Listen on port 50051
     await server.start()
     print("Server started, listening on port 50051.")
-    try:
-        await server.wait_for_termination()
-    except KeyboardInterrupt:
-        await server.stop(None)
+    
+    await stop_event.wait()
+
+    await server.stop(None)
 
 
 if __name__ == '__main__':
     serve()
+
+
+"""
+cd tank && source env/bin/activate
+
+
+"""

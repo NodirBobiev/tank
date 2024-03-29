@@ -2,17 +2,33 @@ from logic.tank.common import Tank
 from logic.bullet.model import Bullet
 from core import entities
 from dataclasses import dataclass
-import pygame 
 from logic.utils import get_direction
+from logic.time.timer import Timer
+from logic.game import Game
+from logic.api import Object
 
 @dataclass
-class TankT34(Tank, entities.Tank):
-    image: pygame.Surface = pygame.image.load("/home/cyrus/tank/images/T34_preview.png")
+class TankT34(Tank, Object):
+    posX: float
+    posY: float
+    velocity: float
+    angle: float
+    health: float
+    bulletDamage: float
+    bulletVelocity: float
+    shootCooldown: float
+        
+    def __post_init__(self):
+        Object.__init__(self)
 
-    def __init__(self, *args, **kwargs):
-        entities.Tank.__init__(self, *args, **kwargs)
+    def init(self, game: Game):
+        self.game = game
+        self.shoot_timer = Timer()
         self.deltaVelocity = 0
         self.deltaAngle = 0
+
+    def start(self):
+        self.shoot_timer.start()
 
     def move_forward(self):
         self.deltaVelocity = self.velocity
@@ -26,13 +42,13 @@ class TankT34(Tank, entities.Tank):
     def rotate_right(self):
         self.deltaAngle = 90
 
-    def update(self, deltatime: float):
-        self.reflect_deltas(deltatime)
+    def update(self):
+        self.reflect_deltas()
         self.reset_deltas()
 
-    def reflect_deltas(self, deltatime: float):
-        self.angle += self.deltaAngle * deltatime
-        dir = get_direction(self.angle) * self.deltaVelocity * deltatime
+    def reflect_deltas(self):
+        self.angle += self.deltaAngle * self.game.timer.get_delta_time()
+        dir = get_direction(self.angle) * self.deltaVelocity * self.game.timer.get_delta_time()
         self.posX += dir.x
         self.posY += dir.y
 
@@ -40,19 +56,18 @@ class TankT34(Tank, entities.Tank):
         self.deltaAngle = 0
         self.deltaVelocity = 0
 
-    def render(self, surface: pygame.Surface):
-        img = pygame.transform.rotate(self.image, 90-self.angle)
-        img_size = img.get_size()
-        pos = (self.posX-img_size[0]/2, self.posY-img_size[1]/2)
-        surface.blit(img, pos)
-
-    def on_shoot(self, b: Bullet):
-        pass
-
     def shoot(self):
-        curTime = pygame.time.get_ticks()
-        if curTime- self.lastShootTime < self.shootCooldown:
+        print(f"tank shoot: {self.shoot_timer.get_elapsed_time()}")
+        if self.shoot_timer.get_elapsed_time() < self.shootCooldown:
             return
-        self.lastShootTime = curTime
-        b = Bullet(self.posX, self.posY, self.angle, self.bulletVelocity, self.bulletDamage)
-        self.on_shoot(b)
+        
+        self.shoot_timer.start()
+        b = Bullet(
+            posX=self.posX, 
+            posY=self.posY, 
+            angle=self.angle, 
+            velocity=self.bulletVelocity, 
+            damage=self.bulletDamage,
+            lifeSpan=1
+        )
+        self.game.add_recent_object(b)

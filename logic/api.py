@@ -1,19 +1,25 @@
 from abc import ABC, abstractmethod
-import pygame
 
 class Command(ABC):
     @abstractmethod
     def execute(self):
         pass
 
-class Object(ABC):
-    @abstractmethod
-    def update(self, deltatime: float):
+class Object:
+    def __init__(self):
+        self.alive = True
+
+    def init(self, *args, **kwargs):
+        pass
+    
+    def start(self):
         pass
 
-    @abstractmethod
-    def render(self, surface: pygame.Surface):
+    def update(self):
         pass
 
+    def destroy(self):
+        self.alive = False
 
-
+    def is_destroyed(self)->bool:
+        return not self.alive

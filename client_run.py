@@ -17,4 +17,5 @@ while True:
             c = input()
             if c == "exit":
                 break
-            post_tank_event(int(c))
+            for i in range(10000):
+                post_tank_event(int(c))
