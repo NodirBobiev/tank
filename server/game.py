@@ -1,6 +1,9 @@
 from proto_gen import game_pb2, game_pb2_grpc
 from concurrent import futures
-from server.parse import parse_tank_event
+from server.parse import parse_tank_event, parse_tank_to_proto, parse_bullet_to_proto
+from logic.game import Game
+from logic.tank.model import TankT34
+from logic.bullet.model import Bullet
 import grpc
 import time
 import random
@@ -63,12 +66,26 @@ def extract_address(context):
     return peer_info
 
 class GameServicer(game_pb2_grpc.GameServicer):
-    def __init__(self, event_queue: asyncio.Queue):
+    def __init__(self, event_queue: asyncio.Queue, game_core: Game):
         self.event_queue = event_queue
+        self.game_core = game_core
 
-    # def GetState(self, request, context):
-    #     print(f"Here we go again! client address={extract_address(context)}")
-    #     return create_game_state_reply()
+    async def GetState(self, request, context):
+        proto_tanks = []
+        proto_bullets = []
+        for obj in self.game_core.objects:
+            if isinstance(obj, TankT34):
+                proto_tanks.append(parse_tank_to_proto(obj))
+            
+            elif isinstance(obj, Bullet):
+                proto_bullets.append(parse_bullet_to_proto(obj))
+        
+        game_state = game_pb2.GameState(tanks=proto_tanks, bullets=proto_bullets)
+        get_state_reply = game_pb2.GetStateReply()
+        get_state_reply.game_state.CopyFrom(game_state)
+
+        print(f"Here we go again! client address={extract_address(context)}")
+        return get_state_reply
     
     # def GetStateStream(self, request, context):
     #     while True:
@@ -97,10 +114,10 @@ class GameServicer(game_pb2_grpc.GameServicer):
         return google.protobuf.empty_pb2.Empty()
     
 
-async def serve(stop_event:asyncio.Event, event_queue: asyncio.Queue):
+async def serve(stop_event:asyncio.Event, event_queue: asyncio.Queue, game_core: Game):
     server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
 
-    game_pb2_grpc.add_GameServicer_to_server(GameServicer(event_queue), server)
+    game_pb2_grpc.add_GameServicer_to_server(GameServicer(event_queue, game_core), server)
 
     server.add_insecure_port('[::]:50051')  # Listen on port 50051
     await server.start()
