@@ -1,8 +1,12 @@
 from proto_gen import game_pb2, game_pb2_grpc
 from concurrent import futures
+from server.parse import parse_tank_event
 import grpc
 import time
 import random
+import asyncio
+import signal
+
 import google.protobuf.empty_pb2
 
 def create_game_state_reply():
@@ -59,18 +63,21 @@ def extract_address(context):
     return peer_info
 
 class GameServicer(game_pb2_grpc.GameServicer):
-    def GetState(self, request, context):
-        print(f"Here we go again! client address={extract_address(context)}")
-        return create_game_state_reply()
+    def __init__(self, event_queue: asyncio.Queue):
+        self.event_queue = event_queue
+
+    # def GetState(self, request, context):
+    #     print(f"Here we go again! client address={extract_address(context)}")
+    #     return create_game_state_reply()
     
-    def GetStateStream(self, request, context):
-        while True:
-            print(f"Sof dunyora jugiyo giriftay client address={extract_address(context)}")
-            # Send random game states to the client
-            yield create_random_game_state()
-            time.sleep(1)  # Adjus
+    # def GetStateStream(self, request, context):
+    #     while True:
+    #         print(f"Sof dunyora jugiyo giriftay client address={extract_address(context)}")
+    #         # Send random game states to the client
+    #         yield create_random_game_state()
+    #         time.sleep(1)  # Adjus
     
-    def PostTankEvent(self, request, context):
+    async def PostTankEvent(self, request, context):
         tank_id = request.tank_id
         event = request.event
 
@@ -86,19 +93,30 @@ class GameServicer(game_pb2_grpc.GameServicer):
         elif event == game_pb2.TankEvent.ROTATE_RIGHT:
             print(f"Tank {tank_id} performed ROTATE_RIGHT")
 
+        await self.event_queue.put(parse_tank_event(event))
         return google.protobuf.empty_pb2.Empty()
     
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+async def serve(stop_event:asyncio.Event, event_queue: asyncio.Queue):
+    server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
 
-    game_pb2_grpc.add_GameServicer_to_server(GameServicer(), server)
+    game_pb2_grpc.add_GameServicer_to_server(GameServicer(event_queue), server)
 
     server.add_insecure_port('[::]:50051')  # Listen on port 50051
-    server.start()
+    await server.start()
     print("Server started, listening on port 50051.")
-    server.wait_for_termination()
+    
+    await stop_event.wait()
+
+    await server.stop(None)
 
 
 if __name__ == '__main__':
     serve()
+
+
+"""
+cd tank && source env/bin/activate
+
+
+"""
