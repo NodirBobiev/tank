@@ -1,7 +1,9 @@
 from client.client import get_game_state, get_game_state_stream, post_random_tank_event, post_tank_event
+from client.serve import run
 
 while True:
     c = input()
+    print(c)
     if c == "0":
         get_game_state()
     if c == "1":
@@ -19,3 +21,5 @@ while True:
                 break
             for i in range(10000):
                 post_tank_event(int(c))
+    if c == "4":
+        run()
