@@ -6,9 +6,7 @@ from logic.time.timer import Timer
 import asyncio
 
 
-async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue):
-    game_timer = Timer()
-    g = Game(timer=game_timer)
+async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue, game_core: Game, game_timer: Timer):
     t1 = TankT34(
         posX=500, 
         posY=500, 
@@ -22,23 +20,23 @@ async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue):
     
     controller = TankController(t1)
 
-    g.add_recent_object(t1)
+    game_core.add_recent_object(t1)
 
-    FPS = 100
-    g.start()
+    FPS = 30
+    game_core.start()
 
     while not shutdown.is_set():
-        g.init_recent_objects()
-        g.start_recent_objects()
+        game_core.init_recent_objects()
+        game_core.start_recent_objects()
         while not event_queue.empty():
             event = await event_queue.get()
             print(f"--- :{event}")
             controller.execute_event(event)
         
-        print(f"objects: {len(g.objects)}")
+        print(f"objects: {len(game_core.objects)}")
         print("******* before await: {:.6f}".format(game_timer.get_real_delta_time()))
         await asyncio.sleep(1 / FPS - game_timer.get_real_delta_time())
         # print("======= after await: {:.6f}".format(game_timer.get_real_delta_time()))
 
-        g.update()
+        game_core.update()
         # g.print()

@@ -70,6 +70,6 @@ class TankT34(Tank, Object):
             angle=self.angle, 
             velocity=self.bulletVelocity, 
             damage=self.bulletDamage,
-            lifeSpan=100
+            lifeSpan=5
         )
         self.game.add_recent_object(b)
