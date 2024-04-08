@@ -1,57 +1,28 @@
+import asyncio
+import signal
+from logic.main import run
+from logic.time.timer import Timer
 from logic.game import Game
-from logic.models import TankT34, Bullet
-import pygame
-
-def run(g: Game):
-    # Initialize Pygame
-    pygame.init()
-
-    # Screen dimensions
-    screen_width, screen_height = 1000, 800
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption('Top-Down Tank Game')
-
-    # Colors
-    background_color = (255, 255, 255) 
-    
-    t1 = TankT34(posX=100, posY=100, angle=90, velocity=100, bulletDamage=20, bulletVelocity=600, shootCooldown=1000)
-    t1.on_shoot = on_shoot(g)
-    t2 = TankT34(posX=500, posY=110, angle=180, velocity=100, bulletDamage=20, bulletVelocity=600, shootCooldown=1000)
-
-    g.objects.append(t1)
-    g.objects.append(t2)
-
-    running = True
-    FPS = 30
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        deltatime = pygame.time.Clock().tick(FPS)/1000
-        g.update(deltatime)
-
-        # Fill the screen with the background color
-        screen.fill(background_color)
-
-        # Draw the tank
-        g.render(screen)
-
-        # Update the display
-        pygame.display.flip()
-
-    # Quit Pygame
-    pygame.quit()
-
-def on_shoot(g : Game):
-
-    def append_to_g(b:Bullet):
-        g.objects = [b] + g.objects
-    
-    return append_to_g
-
-if __name__=="__main__":
-    g = Game()
+from server.game import serve
 
 
-    run(g)
+async def main():
+    stop_event = asyncio.Event()
+    event_queue = asyncio.Queue()
+    game_timer = Timer()
+    game_core = Game(timer=game_timer)
+
+    game_server = asyncio.create_task(serve(stop_event, event_queue, game_core))
+    game_driver = asyncio.create_task(run(stop_event, event_queue, game_core, game_timer))
+
+    loop = asyncio.get_running_loop()
+    # loop.add_signal_handler(signal.SIGINT, stop_event.set)
+    # loop.add_signal_handler(signal.SIGTERM, stop_event.set)
+
+    await asyncio.gather(game_driver, game_server)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
