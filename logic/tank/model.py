@@ -1,7 +1,7 @@
 from logic.tank.common import Tank
 from logic.bullet.model import Bullet
 from dataclasses import dataclass
-from logic.utils import get_direction, object_intersect
+from logic.utils import get_direction, object_intersect, rotate_coordinate_clockwise
 from logic.time.timer import Timer
 from logic.game import Game
 from logic.api import Object
@@ -46,11 +46,12 @@ class TankT34(Tank, Object):
     def update(self):
         self.reflect_deltas()
         self.reset_deltas()
+        self.handle_collision()
 
     def reflect_deltas(self):
-        old_posX = self.posX
-        old_posY = self.posY
-        old_angle = self.angle
+        self.old_posX = self.posX
+        self.old_posY = self.posY
+        self.old_angle = self.angle
         # for performance efficiency check if there is something to multiply
         if self.deltaAngle != 0:
             self.angle += self.deltaAngle * self.game.timer.get_delta_time()
@@ -58,26 +59,35 @@ class TankT34(Tank, Object):
             dir = get_direction(self.angle) * self.deltaVelocity * self.game.timer.get_delta_time()
             self.posX += dir.x
             self.posY += dir.y
+
+
+    def handle_collision(self):
         for o in self.game.objects:
-            if (isinstance(o, TankT34)):
-                if (object_intersect(self, o) and self != o):
-                    self.posX = old_posX
-                    self.posY = old_posY
-                    self.angle = old_angle
-                    break
+            if (self != o and object_intersect(self, o)):
+                if (isinstance(o, TankT34)):
+                    self.posX = self.old_posX
+                    self.posY = self.old_posY
+                    self.angle = self.old_angle
+                elif (isinstance(o, Bullet)):
+                    self.health -= o.damage
+                    o.alive = False
+                    if (self.health <= 0):
+                        self.alive = False
+
     def reset_deltas(self):
         self.deltaAngle = 0
         self.deltaVelocity = 0
 
     def shoot(self):
-        print(f"tank shoot: {self.shoot_timer.get_elapsed_time()}")
-        if self.shoot_timer.get_elapsed_time() < self.shootCooldown:
+        # print(f"tank shoot: {self.shoot_timer.get_elapsed_time()}")
+        if self.shoot_timer.get_elapsed_time() < self.shootCooldown or not self.alive:
             return
         
         self.shoot_timer.start()
+        bX, bY = rotate_coordinate_clockwise(-self.angle, (self.posX + 90, self.posY), (self.posX, self.posY))
         b = Bullet(
-            posX=self.posX, 
-            posY=self.posY, 
+            posX=bX, 
+            posY=bY, 
             angle=self.angle, 
             velocity=self.bulletVelocity, 
             damage=self.bulletDamage,

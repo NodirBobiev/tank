@@ -24,7 +24,7 @@ async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue, game_core: Gam
         posY=700, 
         velocity=100, 
         angle=90, 
-        health=100,
+        health=20,
         bulletDamage=20, 
         bulletVelocity=500, 
         shootCooldown=3
@@ -43,7 +43,7 @@ async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue, game_core: Gam
         game_core.start_recent_objects()
         while not event_queue.empty():
             event = await event_queue.get()
-            print(f"--- :{event}")
+            # print(f"--- :{event}")
             controller.execute_event(event)
         
         # print(f"objects: {len(game_core.objects)}")
