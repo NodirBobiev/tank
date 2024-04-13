@@ -3,24 +3,37 @@ from logic.tank.model import TankT34
 from logic.bullet.model import Bullet
 from logic.controller.tank import TankController
 from logic.time.timer import Timer
+from logic.utils import object_intersect
 import asyncio
 
 
 async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue, game_core: Game, game_timer: Timer):
     t1 = TankT34(
-        posX=500, 
-        posY=500, 
+        posX=300, 
+        posY=700, 
+        velocity=100, 
+        angle=0, 
+        health=100,
+        bulletDamage=20, 
+        bulletVelocity=500, 
+        shootCooldown=3
+    )
+
+    t2 = TankT34(
+        posX=700, 
+        posY=700, 
         velocity=100, 
         angle=90, 
         health=100,
         bulletDamage=20, 
         bulletVelocity=500, 
-        shootCooldown=0
+        shootCooldown=3
     )
     
     controller = TankController(t1)
 
     game_core.add_recent_object(t1)
+    game_core.add_recent_object(t2)
 
     FPS = 30
     game_core.start()
@@ -33,8 +46,18 @@ async def run(shutdown: asyncio.Event, event_queue:asyncio.Queue, game_core: Gam
             print(f"--- :{event}")
             controller.execute_event(event)
         
-        print(f"objects: {len(game_core.objects)}")
-        print("******* before await: {:.6f}".format(game_timer.get_real_delta_time()))
+        # print(f"objects: {len(game_core.objects)}")
+        # print("******* before await: {:.6f}".format(game_timer.get_real_delta_time()))
+        
+        # objs = game_core.objects
+        # for i in range(len(objs)):
+        #     for j in range(i + 1, len(objs)):
+        #         if (object_intersect(objs[i], objs[j])):
+        #             print(i, j)
+        #             print(objs[i].posX, objs[i].posY)
+        #             print(objs[j].posX, objs[j].posY)
+        #             print("INTERSECT: ", type(objs[i]), " AND ", type(objs[j]))
+
         await asyncio.sleep(1 / FPS - game_timer.get_real_delta_time())
         # print("======= after await: {:.6f}".format(game_timer.get_real_delta_time()))
 

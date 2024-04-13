@@ -38,7 +38,7 @@ def run():
     pygame.init()
 
     # Set up the screen
-    WIDTH, HEIGHT = 1000, 800
+    WIDTH, HEIGHT = 1200, 900
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Simple Pygame App")
 

@@ -84,7 +84,7 @@ class GameServicer(game_pb2_grpc.GameServicer):
         get_state_reply = game_pb2.GetStateReply()
         get_state_reply.game_state.CopyFrom(game_state)
 
-        print(f"Here we go again! client address={extract_address(context)}")
+        # print(f"Here we go again! client address={extract_address(context)}")
         return get_state_reply
     
     # def GetStateStream(self, request, context):
@@ -99,16 +99,16 @@ class GameServicer(game_pb2_grpc.GameServicer):
         event = request.event
 
         # Example action handling based on the event
-        if event == game_pb2.TankEvent.SHOOT:
-            print(f"Tank {tank_id} performed SHOOT")
-        elif event == game_pb2.TankEvent.MOVE_FORWARD:
-            print(f"Tank {tank_id} performed MOVE_FORWARD")
-        elif event == game_pb2.TankEvent.MOVE_BACKWARD:
-            print(f"Tank {tank_id} performed MOVE_BACKWARD")
-        elif event == game_pb2.TankEvent.ROTATE_LEFT:
-            print(f"Tank {tank_id} performed ROTATE_LEFT")
-        elif event == game_pb2.TankEvent.ROTATE_RIGHT:
-            print(f"Tank {tank_id} performed ROTATE_RIGHT")
+        # if event == game_pb2.TankEvent.SHOOT:
+        #     print(f"Tank {tank_id} performed SHOOT")
+        # elif event == game_pb2.TankEvent.MOVE_FORWARD:
+        #     print(f"Tank {tank_id} performed MOVE_FORWARD")
+        # elif event == game_pb2.TankEvent.MOVE_BACKWARD:
+        #     print(f"Tank {tank_id} performed MOVE_BACKWARD")
+        # elif event == game_pb2.TankEvent.ROTATE_LEFT:
+        #     print(f"Tank {tank_id} performed ROTATE_LEFT")
+        # elif event == game_pb2.TankEvent.ROTATE_RIGHT:
+        #     print(f"Tank {tank_id} performed ROTATE_RIGHT")
 
         await self.event_queue.put(parse_tank_event(event))
         return google.protobuf.empty_pb2.Empty()

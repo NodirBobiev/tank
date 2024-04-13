@@ -1,9 +1,11 @@
-import pygame
+from pygame.math import Vector2
 from math import sin, cos, pi, radians
 from itertools import combinations
+import logic.tank.model as tanks
+import logic.bullet.model as bullet
 
-def get_direction(angle: float) ->pygame.Vector2:
-    return pygame.math.Vector2(1, 0).rotate(angle)
+def get_direction(angle: float) ->Vector2:
+    return Vector2(1, 0).rotate(angle)
 
 def rotate_coordinate_clockwise(angle: float, coord: tuple, origin: tuple = (0, 0)):
     x, y = coord
@@ -66,21 +68,47 @@ def inside(point: tuple, vs: list):
 
         if (intersect):
             inside = not inside
-    
     return inside
 
+
+def change_angle(obj, angle):
+    if (isinstance(obj, tanks.TankT34)):
+        angle = 90 - angle
+    if (isinstance(obj, bullet.Bullet)):
+        angle = 270 - angle
+    
+    return angle
+# t3 y-8
+
+def change_ver(ver, obj):
+    if (isinstance(obj, tanks.TankT34)):
+        for i in range(4):
+            ver[i] = (ver[i][0], ver[i][1]-8)
+
 def object_intersect(obj1, obj2):
-    pos1 = (obj1.posX, obj1.posY)
-    pos2 = (obj2.posX, obj2.posY)
+    pos1, angle1 = (obj1.posX, obj1.posY), obj1.angle
+    pos2, angle2 = (obj2.posX, obj2.posY), obj2.angle
+
+    angle1 = change_angle(obj1, angle1)
+    angle2 = change_angle(obj2, angle2)
+    
     ver1 = get_vertices(pos1, obj1.width, obj1.height)
     ver2 = get_vertices(pos2, obj2.width, obj2.height)
+
+    change_ver(ver1, obj1)
+    change_ver(ver2, obj2)
     
     for i in range(4): # rotate vertices
-        ver1[i] = rotate_coordinate_clockwise(obj1.angle, ver1[i], pos1)
-        ver2[i] = rotate_coordinate_clockwise(obj2.angle, ver2[i], pos2)
+        ver1[i] = rotate_coordinate_clockwise(angle1, ver1[i], pos1)
+        ver2[i] = rotate_coordinate_clockwise(angle2, ver2[i], pos2)
+
+    # print('-------------')
+    # print(ver1, ', ', pos1)
+    # print(ver2, ', ', pos2)
     
+    # print(pos1, ',', pos2)
     for i in range(4):
-        if (inside(ver1[i], ver2)):
+        if inside(ver1[i], ver2) or inside(ver2[i], ver1):
             return True
     
     return False

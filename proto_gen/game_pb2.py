@@ -15,25 +15,25 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\ngame.proto\x12\x04game\x1a\x1bgoogle/protobuf/empty.proto\"\xc2\x01\n\x04Tank\x12\r\n\x05pos_x\x18\x01 \x01(\x01\x12\r\n\x05pos_y\x18\x02 \x01(\x01\x12\x10\n\x08velocity\x18\x03 \x01(\x01\x12\r\n\x05\x61ngle\x18\x04 \x01(\x01\x12\x0e\n\x06health\x18\x05 \x01(\x01\x12\x15\n\rbullet_damage\x18\x06 \x01(\x01\x12\x17\n\x0f\x62ullet_velocity\x18\x07 \x01(\x01\x12\x16\n\x0eshoot_cooldown\x18\x08 \x01(\x01\x12\x17\n\x0flast_shoot_time\x18\t \x01(\x01\x12\n\n\x02id\x18\n \x01(\t\"W\n\x06\x42ullet\x12\r\n\x05pos_x\x18\x01 \x01(\x01\x12\r\n\x05pos_y\x18\x02 \x01(\x01\x12\r\n\x05\x61ngle\x18\x03 \x01(\x01\x12\x10\n\x08velocity\x18\x04 \x01(\x01\x12\x0e\n\x06\x64\x61mage\x18\x05 \x01(\x01\"E\n\tGameState\x12\x19\n\x05tanks\x18\x01 \x03(\x0b\x32\n.game.Tank\x12\x1d\n\x07\x62ullets\x18\x02 \x03(\x0b\x32\x0c.game.Bullet\"4\n\rGetStateReply\x12#\n\ngame_state\x18\x01 \x01(\x0b\x32\x0f.game.GameState\"G\n\x14PostTankEventRequest\x12\x1e\n\x05\x65vent\x18\x01 \x01(\x0e\x32\x0f.game.TankEvent\x12\x0f\n\x07tank_id\x18\x02 \x01(\t*^\n\tTankEvent\x12\t\n\x05SHOOT\x10\x00\x12\x10\n\x0cMOVE_FORWARD\x10\x01\x12\x11\n\rMOVE_BACKWARD\x10\x02\x12\x0f\n\x0bROTATE_LEFT\x10\x03\x12\x10\n\x0cROTATE_RIGHT\x10\x04\x32\xc1\x01\n\x04Game\x12\x37\n\x08GetState\x12\x16.google.protobuf.Empty\x1a\x13.game.GetStateReply\x12;\n\x0eGetStateStream\x12\x16.google.protobuf.Empty\x1a\x0f.game.GameState0\x01\x12\x43\n\rPostTankEvent\x12\x1a.game.PostTankEventRequest\x1a\x16.google.protobuf.Emptyb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\ngame.proto\x12\x04game\x1a\x1bgoogle/protobuf/empty.proto\"\xe1\x01\n\x04Tank\x12\r\n\x05pos_x\x18\x01 \x01(\x01\x12\r\n\x05pos_y\x18\x02 \x01(\x01\x12\x10\n\x08velocity\x18\x03 \x01(\x01\x12\r\n\x05\x61ngle\x18\x04 \x01(\x01\x12\x0e\n\x06health\x18\x05 \x01(\x01\x12\x15\n\rbullet_damage\x18\x06 \x01(\x01\x12\x17\n\x0f\x62ullet_velocity\x18\x07 \x01(\x01\x12\x16\n\x0eshoot_cooldown\x18\x08 \x01(\x01\x12\x17\n\x0flast_shoot_time\x18\t \x01(\x01\x12\n\n\x02id\x18\n \x01(\t\x12\r\n\x05width\x18\x0b \x01(\x01\x12\x0e\n\x06height\x18\x0c \x01(\x01\"v\n\x06\x42ullet\x12\r\n\x05pos_x\x18\x01 \x01(\x01\x12\r\n\x05pos_y\x18\x02 \x01(\x01\x12\r\n\x05\x61ngle\x18\x03 \x01(\x01\x12\x10\n\x08velocity\x18\x04 \x01(\x01\x12\x0e\n\x06\x64\x61mage\x18\x05 \x01(\x01\x12\r\n\x05width\x18\x06 \x01(\x01\x12\x0e\n\x06height\x18\x07 \x01(\x01\"E\n\tGameState\x12\x19\n\x05tanks\x18\x01 \x03(\x0b\x32\n.game.Tank\x12\x1d\n\x07\x62ullets\x18\x02 \x03(\x0b\x32\x0c.game.Bullet\"4\n\rGetStateReply\x12#\n\ngame_state\x18\x01 \x01(\x0b\x32\x0f.game.GameState\"G\n\x14PostTankEventRequest\x12\x1e\n\x05\x65vent\x18\x01 \x01(\x0e\x32\x0f.game.TankEvent\x12\x0f\n\x07tank_id\x18\x02 \x01(\t*^\n\tTankEvent\x12\t\n\x05SHOOT\x10\x00\x12\x10\n\x0cMOVE_FORWARD\x10\x01\x12\x11\n\rMOVE_BACKWARD\x10\x02\x12\x0f\n\x0bROTATE_LEFT\x10\x03\x12\x10\n\x0cROTATE_RIGHT\x10\x04\x32\xc1\x01\n\x04Game\x12\x37\n\x08GetState\x12\x16.google.protobuf.Empty\x1a\x13.game.GetStateReply\x12;\n\x0eGetStateStream\x12\x16.google.protobuf.Empty\x1a\x0f.game.GameState0\x01\x12\x43\n\rPostTankEvent\x12\x1a.game.PostTankEventRequest\x1a\x16.google.protobuf.Emptyb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'game_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_TANKEVENT']._serialized_start=533
-  _globals['_TANKEVENT']._serialized_end=627
+  _globals['_TANKEVENT']._serialized_start=595
+  _globals['_TANKEVENT']._serialized_end=689
   _globals['_TANK']._serialized_start=50
-  _globals['_TANK']._serialized_end=244
-  _globals['_BULLET']._serialized_start=246
-  _globals['_BULLET']._serialized_end=333
-  _globals['_GAMESTATE']._serialized_start=335
-  _globals['_GAMESTATE']._serialized_end=404
-  _globals['_GETSTATEREPLY']._serialized_start=406
-  _globals['_GETSTATEREPLY']._serialized_end=458
-  _globals['_POSTTANKEVENTREQUEST']._serialized_start=460
-  _globals['_POSTTANKEVENTREQUEST']._serialized_end=531
-  _globals['_GAME']._serialized_start=630
-  _globals['_GAME']._serialized_end=823
+  _globals['_TANK']._serialized_end=275
+  _globals['_BULLET']._serialized_start=277
+  _globals['_BULLET']._serialized_end=395
+  _globals['_GAMESTATE']._serialized_start=397
+  _globals['_GAMESTATE']._serialized_end=466
+  _globals['_GETSTATEREPLY']._serialized_start=468
+  _globals['_GETSTATEREPLY']._serialized_end=520
+  _globals['_POSTTANKEVENTREQUEST']._serialized_start=522
+  _globals['_POSTTANKEVENTREQUEST']._serialized_end=593
+  _globals['_GAME']._serialized_start=692
+  _globals['_GAME']._serialized_end=885
 # @@protoc_insertion_point(module_scope)

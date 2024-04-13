@@ -21,6 +21,8 @@ message Tank {
   double shoot_cooldown = 8;
   double last_shoot_time = 9;
   string id = 10;
+  double width = 11;
+  double height = 12;
 }
 
 message Bullet {
@@ -29,6 +31,8 @@ message Bullet {
   double angle = 3;
   double velocity = 4;
   double damage = 5;
+  double width = 6;
+  double height = 7;
 }
 
 message GameState {
