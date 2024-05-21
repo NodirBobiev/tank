@@ -1,6 +1,6 @@
 from enum import Enum
 from logic.api import Command
-from logic.tank.model import Tank
+from logic.tank.common import Tank
 from typing import Mapping
 import random
 

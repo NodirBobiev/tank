@@ -3,12 +3,14 @@ from concurrent import futures
 from server.parse import parse_tank_event, parse_tank_to_proto, parse_bullet_to_proto
 from logic.game import Game
 from logic.tank.model import TankT34
+from logic.controller.tank import TankController
 from logic.bullet.model import Bullet
 import grpc
 import time
 import random
 import asyncio
 import signal
+import uuid
 
 import google.protobuf.empty_pb2
 
@@ -70,6 +72,25 @@ class GameServicer(game_pb2_grpc.GameServicer):
         self.event_queue = event_queue
         self.game_core = game_core
 
+    async def JoinGame(self, request, context):
+        tank_id=str(uuid.uuid4())
+        t1 = TankT34(
+            posX=300, 
+            posY=700, 
+            velocity=100, 
+            angle=0, 
+            health=100,
+            bulletDamage=20, 
+            bulletVelocity=500, 
+            shootCooldown=3,
+            tank_id=tank_id
+        )
+        # TankT34.controller = TankController(t1)
+
+        self.game_core.add_recent_object(t1)
+        return game_pb2.JoinGameReply(tank_id=tank_id)
+        # pass
+
     async def GetState(self, request, context):
         proto_tanks = []
         proto_bullets = []
@@ -110,7 +131,7 @@ class GameServicer(game_pb2_grpc.GameServicer):
         # elif event == game_pb2.TankEvent.ROTATE_RIGHT:
         #     print(f"Tank {tank_id} performed ROTATE_RIGHT")
 
-        await self.event_queue.put(parse_tank_event(event))
+        await self.event_queue.put((tank_id, parse_tank_event(event)))
         return google.protobuf.empty_pb2.Empty()
     
 

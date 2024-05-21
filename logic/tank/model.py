@@ -1,5 +1,6 @@
 from logic.tank.common import Tank
 from logic.bullet.model import Bullet
+from logic.controller.tank import TankController
 from dataclasses import dataclass
 from logic.utils import get_direction, object_intersect, rotate_coordinate_clockwise
 from logic.time.timer import Timer
@@ -16,11 +17,13 @@ class TankT34(Tank, Object):
     bulletDamage: float
     bulletVelocity: float
     shootCooldown: float
+    tank_id: str
         
     def __post_init__(self):
         Object.__init__(self)
         self.width = 74
         self.height = 152
+        self.controller = TankController(self)
 
     def init(self, game: Game):
         self.game = game
@@ -70,9 +73,9 @@ class TankT34(Tank, Object):
                     self.angle = self.old_angle
                 elif (isinstance(o, Bullet)):
                     self.health -= o.damage
-                    o.alive = False
+                    o.destroy()
                     if (self.health <= 0):
-                        self.alive = False
+                        self.destroy()
 
     def reset_deltas(self):
         self.deltaAngle = 0
