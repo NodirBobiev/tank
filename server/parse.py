@@ -26,6 +26,8 @@ def parse_tank_to_proto(tank: TankT34)->game_pb2.Tank:
     proto_result.bullet_damage = tank.bulletDamage
     proto_result.bullet_velocity = tank.bulletVelocity
     proto_result.shoot_cooldown = tank.shootCooldown
+    proto_result.width = tank.width
+    proto_result.height = tank.height
 
     return proto_result
 
@@ -37,5 +39,7 @@ def parse_bullet_to_proto(bullet: Bullet)->game_pb2.Bullet:
     proto_result.velocity = bullet.velocity
     proto_result.angle = bullet.angle
     proto_result.damage = bullet.damage
+    proto_result.width = bullet.width
+    proto_result.height = bullet.height
 
     return proto_result

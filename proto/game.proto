@@ -2,12 +2,11 @@ syntax = "proto3";
 
 package game;
 
-import "google/protobuf/empty.proto";
-
 service Game {
-  rpc GetState(google.protobuf.Empty) returns (GetStateReply);
-  rpc GetStateStream(google.protobuf.Empty) returns (stream GameState);
-  rpc PostTankEvent(PostTankEventRequest) returns(google.protobuf.Empty);
+  rpc JoinGame(Empty) returns (JoinGameReply);
+  rpc GetState(Empty) returns (GetStateReply);
+  rpc GetStateStream(Empty) returns (stream GameState);
+  rpc PostTankEvent(PostTankEventRequest) returns(Empty);
 }
 
 message Tank {
@@ -21,6 +20,8 @@ message Tank {
   double shoot_cooldown = 8;
   double last_shoot_time = 9;
   string id = 10;
+  double width = 11;
+  double height = 12;
 }
 
 message Bullet {
@@ -29,6 +30,12 @@ message Bullet {
   double angle = 3;
   double velocity = 4;
   double damage = 5;
+  double width = 6;
+  double height = 7;
+}
+
+message JoinGameReply {
+  string tank_id = 1;
 }
 
 message GameState {
@@ -45,7 +52,6 @@ message GetStateReply {
 message PostTankEventRequest{
   TankEvent event = 1;
   string tank_id = 2;
-
 }
 
 enum TankEvent{
@@ -54,4 +60,8 @@ enum TankEvent{
   MOVE_BACKWARD = 2;
   ROTATE_LEFT = 3;
   ROTATE_RIGHT = 4;
+}
+
+message Empty {
+
 }

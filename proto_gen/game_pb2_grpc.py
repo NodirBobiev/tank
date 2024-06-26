@@ -3,7 +3,6 @@
 import grpc
 
 from proto_gen import game_pb2 as game__pb2
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class GameStub(object):
@@ -15,25 +14,36 @@ class GameStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.JoinGame = channel.unary_unary(
+                '/game.Game/JoinGame',
+                request_serializer=game__pb2.Empty.SerializeToString,
+                response_deserializer=game__pb2.JoinGameReply.FromString,
+                )
         self.GetState = channel.unary_unary(
                 '/game.Game/GetState',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                request_serializer=game__pb2.Empty.SerializeToString,
                 response_deserializer=game__pb2.GetStateReply.FromString,
                 )
         self.GetStateStream = channel.unary_stream(
                 '/game.Game/GetStateStream',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                request_serializer=game__pb2.Empty.SerializeToString,
                 response_deserializer=game__pb2.GameState.FromString,
                 )
         self.PostTankEvent = channel.unary_unary(
                 '/game.Game/PostTankEvent',
                 request_serializer=game__pb2.PostTankEventRequest.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                response_deserializer=game__pb2.Empty.FromString,
                 )
 
 
 class GameServicer(object):
     """Missing associated documentation comment in .proto file."""
+
+    def JoinGame(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def GetState(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -56,20 +66,25 @@ class GameServicer(object):
 
 def add_GameServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'JoinGame': grpc.unary_unary_rpc_method_handler(
+                    servicer.JoinGame,
+                    request_deserializer=game__pb2.Empty.FromString,
+                    response_serializer=game__pb2.JoinGameReply.SerializeToString,
+            ),
             'GetState': grpc.unary_unary_rpc_method_handler(
                     servicer.GetState,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    request_deserializer=game__pb2.Empty.FromString,
                     response_serializer=game__pb2.GetStateReply.SerializeToString,
             ),
             'GetStateStream': grpc.unary_stream_rpc_method_handler(
                     servicer.GetStateStream,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    request_deserializer=game__pb2.Empty.FromString,
                     response_serializer=game__pb2.GameState.SerializeToString,
             ),
             'PostTankEvent': grpc.unary_unary_rpc_method_handler(
                     servicer.PostTankEvent,
                     request_deserializer=game__pb2.PostTankEventRequest.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    response_serializer=game__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -80,6 +95,23 @@ def add_GameServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Game(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def JoinGame(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/game.Game/JoinGame',
+            game__pb2.Empty.SerializeToString,
+            game__pb2.JoinGameReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def GetState(request,
@@ -93,7 +125,7 @@ class Game(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/game.Game/GetState',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            game__pb2.Empty.SerializeToString,
             game__pb2.GetStateReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -110,7 +142,7 @@ class Game(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/game.Game/GetStateStream',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            game__pb2.Empty.SerializeToString,
             game__pb2.GameState.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -128,6 +160,6 @@ class Game(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/game.Game/PostTankEvent',
             game__pb2.PostTankEventRequest.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            game__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

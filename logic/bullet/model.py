@@ -15,6 +15,8 @@ class Bullet(Object):
     
     def __post_init__(self):
         Object.__init__(self)
+        self.width = 4
+        self.height = 6
 
     def init(self, game: Game):
         self.game = game

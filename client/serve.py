@@ -1,18 +1,21 @@
 from proto_gen import game_pb2, game_pb2_grpc
 from client.parse import parse_proto_to_bullet, parse_proto_to_tank
 import grpc
-import google.protobuf.empty_pb2
-import uuid
-import random
 import pygame
 import sys
 
 
 
+def join_game(stub):
+    
+    response = stub.JoinGame(game_pb2.Empty())
+
+    return response.tank_id
+
 def get_game_state(stub):
     # Assuming the server is running on localhost and listening on port 50051
   
-    response = stub.GetState(google.protobuf.empty_pb2.Empty())
+    response = stub.GetState(game_pb2.Empty())
     # print("Game State Received:")
     # # Example output of tanks and bullets, updated to follow Python naming conventions
     # for tank in response.game_state.tanks:
@@ -21,9 +24,8 @@ def get_game_state(stub):
     #     print(f"Bullet at ({bullet.pos_x}, {bullet.pos_y}) with damage {bullet.damage}")
     return response
 
-def post_tank_event(stub, event):
+def post_tank_event(stub, event, tank_id):
     
-    tank_id = "NULL"
     request = game_pb2.PostTankEventRequest(tank_id=tank_id, event=event)
     
     # print(f"Posting event for tank {tank_id}: Event {event}")
@@ -38,7 +40,7 @@ def run():
     pygame.init()
 
     # Set up the screen
-    WIDTH, HEIGHT = 1000, 800
+    WIDTH, HEIGHT = 1200, 900
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Simple Pygame App")
 
@@ -58,6 +60,7 @@ def run():
         pygame.K_RIGHT: game_pb2.TankEvent.ROTATE_RIGHT,
     }
 
+    tank_id = join_game(stub)
     while running:
         screen.fill(WHITE)
 
@@ -69,7 +72,7 @@ def run():
         keys = pygame.key.get_pressed()
         for key in events.keys():
             if keys[key]:
-                post_tank_event(stub, events[key])
+                post_tank_event(stub, events[key], tank_id)
         
         obj = []
         test = get_game_state(stub)
